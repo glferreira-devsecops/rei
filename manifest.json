@@ -1,0 +1,38 @@
+{
+  "name": "Rei da Pizza RJ - Preço Baixo & Qualidade",
+  "short_name": "Rei da Pizza",
+  "description": "Inspirando pessoas a empreender. Preço baixo, qualidade e garantia de satisfação! Pizza família 30cm por R$ 15.",
+  "start_url": "/",
+  "scope": "/",
+  "id": "/",
+  "display": "standalone",
+  "background_color": "#0F0F0F",
+  "theme_color": "#FF2A00",
+  "orientation": "portrait-primary",
+  "categories": ["food", "shopping"],
+  "lang": "pt-BR",
+  "icons": [
+    {
+      "src": "/favicon-16.png",
+      "type": "image/png",
+      "sizes": "16x16"
+    },
+    {
+      "src": "/favicon-32.png",
+      "type": "image/png",
+      "sizes": "32x32"
+    },
+    {
+      "src": "/icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ]
+}

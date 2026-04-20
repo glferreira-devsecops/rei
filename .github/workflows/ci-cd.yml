@@ -1,0 +1,178 @@
+name: '🍕 Rei da Pizza — CI/CD Pipeline'
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  # ============================================================
+  # 1. LINT & VALIDATE (Qualidade do Código)
+  # ============================================================
+  lint:
+    name: '🔍 Lint & Validate'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate HTML (W3C Nu Validator)
+        uses: nicnocquee/html-validate-action@v1
+        with:
+          files: 'index.html 404.html'
+
+      - name: Validate JSON (manifest + vercel)
+        run: |
+          python3 -c "import json; json.load(open('manifest.json'))" && echo "✅ manifest.json válido"
+          python3 -c "import json; json.load(open('vercel.json'))" && echo "✅ vercel.json válido"
+
+      - name: Check for dead files (main.js, etc)
+        run: |
+          if [ -f "js/main.js" ]; then
+            echo "❌ ERRO: js/main.js ainda existe! Arquivo legacy com número falso exposto."
+            exit 1
+          fi
+          echo "✅ Nenhum código morto detectado."
+
+      - name: Check heading hierarchy
+        run: |
+          # Garantir que só existe 1 h1
+          H1_COUNT=$(grep -c '<h1' index.html || true)
+          if [ "$H1_COUNT" -ne 1 ]; then
+            echo "❌ ERRO: Encontrados $H1_COUNT tags <h1>. Deve haver exatamente 1."
+            exit 1
+          fi
+          echo "✅ Hierarquia de headings OK (1 h1 encontrado)."
+
+      - name: Check for exposed phone numbers
+        run: |
+          # Não pode ter número de telefone em plain text no JS
+          if grep -rn '55219' js/app.js | grep -v 'atob\|Base64\|obfusc'; then
+            echo "❌ ALERTA: Número de telefone possivelmente exposto em plain text no JS!"
+            exit 1
+          fi
+          echo "✅ Nenhum telefone exposto em plain text."
+
+  # ============================================================
+  # 2. SECURITY AUDIT (Pentest Estático)
+  # ============================================================
+  security:
+    name: '🔐 Security Audit'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check for inline onclick/onload handlers (XSS vectors)
+        run: |
+          ONCLICK_COUNT=$(grep -c 'onclick=' index.html || true)
+          ONLOAD_COUNT=$(grep -c 'onload=' index.html || true)
+          ONERROR_COUNT=$(grep -c 'onerror=' index.html || true)
+          if [ "$ONCLICK_COUNT" -gt 0 ] || [ "$ONLOAD_COUNT" -gt 0 ] || [ "$ONERROR_COUNT" -gt 0 ]; then
+            echo "❌ ERRO: Inline event handlers detectados no HTML!"
+            echo "   onclick: $ONCLICK_COUNT | onload: $ONLOAD_COUNT | onerror: $ONERROR_COUNT"
+            echo "   Migre para addEventListener no JS."
+            exit 1
+          fi
+          echo "✅ Zero inline event handlers no HTML."
+
+      - name: Check for target=_blank without rel
+        run: |
+          if grep -Pn 'target="_blank"' index.html | grep -v 'rel="noopener'; then
+            echo "❌ ERRO: Links target=_blank sem rel=noopener noreferrer (Reverse Tabnabbing!)"
+            exit 1
+          fi
+          echo "✅ Todos os links externos protegidos contra Reverse Tabnabbing."
+
+      - name: Check CSP exists in vercel.json
+        run: |
+          if ! grep -q 'Content-Security-Policy' vercel.json; then
+            echo "❌ ERRO: CSP Header ausente no vercel.json!"
+            exit 1
+          fi
+          echo "✅ CSP configurado nos headers do Vercel."
+
+      - name: Check HSTS exists
+        run: |
+          if ! grep -q 'Strict-Transport-Security' vercel.json; then
+            echo "❌ ERRO: HSTS ausente no vercel.json!"
+            exit 1
+          fi
+          echo "✅ HSTS preload configurado."
+
+      - name: Check sensitive files not in repo
+        run: |
+          for f in .env .env.local llms.txt descriptions.txt; do
+            if [ -f "$f" ]; then
+              echo "❌ ERRO: Arquivo sensível '$f' presente no repositório!"
+              exit 1
+            fi
+          done
+          echo "✅ Nenhum arquivo sensível no repositório."
+
+  # ============================================================
+  # 3. PERFORMANCE BUDGET (Limites de Peso)
+  # ============================================================
+  performance:
+    name: '⚡ Performance Budget'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check bundle sizes
+        run: |
+          HTML_SIZE=$(wc -c < index.html)
+          CSS_SIZE=$(wc -c < css/styles.css)
+          JS_SIZE=$(wc -c < js/app.js)
+          SW_SIZE=$(wc -c < sw.js)
+
+          echo "📊 Bundle Report:"
+          echo "   HTML:  ${HTML_SIZE} bytes"
+          echo "   CSS:   ${CSS_SIZE} bytes"
+          echo "   JS:    ${JS_SIZE} bytes"
+          echo "   SW:    ${SW_SIZE} bytes"
+          echo "   TOTAL: $(( HTML_SIZE + CSS_SIZE + JS_SIZE + SW_SIZE )) bytes"
+
+          # Limites: HTML < 25KB, CSS < 30KB, JS < 50KB
+          if [ "$HTML_SIZE" -gt 25000 ]; then
+            echo "⚠️ ALERTA: HTML acima do budget (25KB)!"
+          fi
+          if [ "$CSS_SIZE" -gt 30000 ]; then
+            echo "⚠️ ALERTA: CSS acima do budget (30KB)!"
+          fi
+          if [ "$JS_SIZE" -gt 50000 ]; then
+            echo "❌ ERRO: JS acima do budget (50KB)! Otimizar ou code-split."
+            exit 1
+          fi
+          echo "✅ Todos os bundles dentro do budget."
+
+      - name: Check image sizes
+        run: |
+          echo "📸 Image Report:"
+          for img in *.png; do
+            SIZE=$(wc -c < "$img")
+            echo "   $img: ${SIZE} bytes"
+            if [ "$SIZE" -gt 500000 ]; then
+              echo "❌ ERRO: $img > 500KB! Comprimir com TinyPNG."
+              exit 1
+            fi
+          done
+          echo "✅ Todas as imagens dentro do budget."
+
+  # ============================================================
+  # 4. DEPLOY (Vercel Production)
+  # ============================================================
+  deploy:
+    name: '🚀 Deploy to Vercel'
+    needs: [lint, security, performance]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy to Vercel
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-args: '--prod'

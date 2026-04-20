@@ -1,0 +1,35 @@
+# === LOGS & PROCESSOS ===
+*.log
+cloudflare.log
+server.log
+tunnel.log
+tunnel_fresh.log
+tunnel_new.log
+
+# === BINÁRIOS PESADOS (yt-dlp tem 36MB!) ===
+yt-dlp
+
+# === DIRETÓRIOS VAZIOS / DEV ARTIFACTS ===
+subs/
+assets/
+descriptions.txt
+llms.txt
+
+# === OS / IDE ===
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# === Node (caso futuro) ===
+node_modules/
+.env
+.env.local
+.env.production
+
+# === Vercel ===
+.vercel/
+

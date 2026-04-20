@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Fundo -->
+  <rect width="512" height="512" fill="#0F0F0F"/>
+  <!-- Base da Pizza Neon Lava -->
+  <circle cx="256" cy="256" r="180" fill="#FF2A00" stroke="#FFC107" stroke-width="20"/>
+  <!-- Fatias / Geometria -->
+  <path d="M256 76 L256 436 M76 256 L436 256 M128.7 128.7 L383.3 383.3 M128.7 383.3 L383.3 128.7" stroke="#0F0F0F" stroke-width="15"/>
+  <!-- Pepperonies -->
+  <circle cx="200" cy="180" r="25" fill="#FFC107"/>
+  <circle cx="320" cy="220" r="25" fill="#FFC107"/>
+  <circle cx="256" cy="320" r="25" fill="#FFC107"/>
+</svg>
