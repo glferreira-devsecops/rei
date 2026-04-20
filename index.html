@@ -30,7 +30,7 @@
   <meta name="apple-mobile-web-app-title" content="Rei da Pizza">
 
   <!-- CSP OMEGA GATEWAY: Bloqueio Total de Domínios. Permitido apenas viaCEP, YouTube Lite e Cloudflare Fonts -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://storage.googleapis.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src https://fonts.gstatic.com; img-src 'self' data: https:; frame-src https://www.youtube.com https://www.youtube-nocookie.com; connect-src 'self' https://viacep.com.br; object-src 'none'; base-uri 'self'; form-action 'none'; upgrade-insecure-requests; block-all-mixed-content;">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://storage.googleapis.com https://www.youtube.com https://s.ytimg.com https://www.youtube-nocookie.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; font-src https://fonts.gstatic.com; img-src 'self' data: https:; frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com; connect-src 'self' https://viacep.com.br; object-src 'none'; base-uri 'self'; form-action 'none'; upgrade-insecure-requests; block-all-mixed-content;">
 
 
   
@@ -59,6 +59,9 @@
   
   <!-- DNS Prefetch: ViaCEP (Antecipa resolução DNS pra quando abrir o checkout) -->
   <link rel="dns-prefetch" href="https://viacep.com.br">
+  
+  <!-- Preload da Thumbnail do YouTube (Zera o LCP delay) -->
+  <link rel="preload" href="https://i.ytimg.com/vi/pX-fR89CRHw/hqdefault.jpg" as="image">
 
   <!-- Favicon SVG (Scalable, infinita resolução em qualquer device) -->
   <link rel="icon" type="image/svg+xml" href="icon.svg">
