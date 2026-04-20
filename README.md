@@ -105,13 +105,10 @@ O pipeline `.github/workflows/ci-cd.yml` roda automaticamente em cada `push` e `
 |---|---|
 | 🔍 **Lint & Validate** | Valida HTML (W3C), JSON (manifest/vercel), detecta código morto, verifica hierarquia de headings, busca telefones expostos |
 | 🔐 **Security Audit** | Caça inline onclick/onload (vetores XSS), links `target=_blank` sem `rel`, verifica CSP e HSTS nos headers, detecta arquivos sensíveis |
-| ⚡ **Performance Budget** | Limita HTML < 25KB, CSS < 30KB, JS < 50KB, Imagens < 500KB. Qualquer overflow bloqueia o deploy |
-| 🚀 **Deploy** | Auto-deploy na Vercel Production (só na branch `main` após os 3 gates passarem) |
+| ⚡ **Performance Budget** | Limita HTML < 25KB, CSS < 30KB, JS < 50KB, Imagens < 500KB. Qualquer overflow trava o CI/CD |
 
-**Secrets necessários no GitHub:**
-- `VERCEL_TOKEN` — Token da API Vercel
-- `VERCEL_ORG_ID` — ID da organização
-- `VERCEL_PROJECT_ID` — ID do projeto
+**Nota sobre Deploy:**
+A Vercel faz o deploy **automaticamente** assim que você faz push no GitHub (Vercel GitHub Integration). O pipeline CI/CD existe exclusivamente para **auditoria antes do push final** ou para bloquear PRs (Pull Requests) mal formatados.
 
 ## 📊 Lógica de Negócio (Edge Cases Reais)
 
