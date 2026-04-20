@@ -335,6 +335,8 @@ lite-youtube {
   width: 100%;
   height: calc(var(--thumb-zone-height) + env(safe-area-inset-bottom, 0px));
   padding-bottom: env(safe-area-inset-bottom, 0px);
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
   background: rgba(15, 15, 15, 0.95);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
