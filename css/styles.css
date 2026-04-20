@@ -655,7 +655,7 @@ lite-youtube {
 }
 
 .checkout-header {
-  padding: 1.5rem;
+  padding: 1.5rem 1.75rem 1rem 1.75rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -667,13 +667,15 @@ lite-youtube {
   font-weight: 800;
   color: var(--celta-bone);
   margin: 0;
+  line-height: 1;
 }
 
 #close-checkout-btn {
-  font-size: 1.5rem;
+  font-size: 1.75rem;
   color: var(--celta-sub);
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
+  margin-right: -0.5rem; /* Ajuste óptico pra encostar mais perto da borda real sem invadir a curva do raio */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -699,10 +701,13 @@ lite-youtube {
 
 .checkout-items-list {
   list-style: none;
-  padding: 0;
+  padding: 1rem;
   margin: 0 0 1rem 0;
   color: var(--celta-bone);
   font-size: var(--text-base);
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.03);
 }
 
 .checkout-items-list li {
@@ -736,15 +741,16 @@ lite-youtube {
 
 .upsell-label {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 0.75rem;
   cursor: pointer;
 }
 
 .upsell-checkbox {
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
   flex-shrink: 0;
+  margin-top: 2px;
   accent-color: var(--neuro-warning);
 }
 
@@ -782,7 +788,10 @@ lite-youtube {
   padding: 0.5rem 1rem;
   min-height: 44px; /* WCAG 2.5.5 AAA: Touch Target mínimo */
   display: flex;
+  flex: 1; /* Força botões Pix, Cartão e Dinheiro a dividirem espaçamentos iguais */
+  justify-content: center;
   align-items: center;
+  text-align: center;
   border-radius: 999px;
   font-size: var(--text-sm);
   font-weight: 600;
@@ -808,7 +817,7 @@ lite-youtube {
   width: 100%;
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 1rem;
+  padding: 1rem 1.25rem; /* Ajuste Tático: Respiração interna pro placeholder não grudar na borda esquerda */
   border-radius: 8px;
   color: var(--celta-bone);
   /* IMPORTANTE: font-size >= 16px previne auto-zoom no iOS Safari quando clica no input! */
@@ -838,7 +847,7 @@ lite-youtube {
   align-items: center;
   font-size: var(--text-lg);
   color: var(--celta-bone);
-  margin-bottom: 1rem;
+  margin-bottom: 1.25rem;
 }
 
 .checkout-total-row strong {
