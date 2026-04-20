@@ -1,12 +1,42 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <!-- Fundo -->
-  <rect width="512" height="512" fill="#0F0F0F"/>
-  <!-- Base da Pizza Neon Lava -->
-  <circle cx="256" cy="256" r="180" fill="#FF2A00" stroke="#FFC107" stroke-width="20"/>
-  <!-- Fatias / Geometria -->
-  <path d="M256 76 L256 436 M76 256 L436 256 M128.7 128.7 L383.3 383.3 M128.7 383.3 L383.3 128.7" stroke="#0F0F0F" stroke-width="15"/>
-  <!-- Pepperonies -->
-  <circle cx="200" cy="180" r="25" fill="#FFC107"/>
-  <circle cx="320" cy="220" r="25" fill="#FFC107"/>
-  <circle cx="256" cy="320" r="25" fill="#FFC107"/>
+  <defs>
+    <linearGradient id="cheese" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFD54F"/>
+      <stop offset="50%" stop-color="#FFC107"/>
+      <stop offset="100%" stop-color="#FF8F00"/>
+    </linearGradient>
+    <linearGradient id="crust" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#D4A056"/>
+      <stop offset="100%" stop-color="#8B6914"/>
+    </linearGradient>
+    <linearGradient id="sauce" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF2A00"/>
+      <stop offset="100%" stop-color="#CC1100"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <!-- Fundo Void -->
+  <rect width="512" height="512" rx="80" fill="#0F0F0F"/>
+  <!-- Fatia de Pizza (Triângulo com Crosta Curvada) -->
+  <path d="M256 80 L420 400 Q340 440 256 440 Q172 440 92 400 Z" fill="url(#sauce)" filter="url(#glow)"/>
+  <!-- Queijo derretendo -->
+  <path d="M256 100 L400 380 Q330 420 256 420 Q182 420 112 380 Z" fill="url(#cheese)"/>
+  <!-- Crosta dourada -->
+  <path d="M92 400 Q172 440 256 440 Q340 440 420 400 L400 380 Q330 420 256 420 Q182 420 112 380 Z" fill="url(#crust)"/>
+  <!-- Calabresas (Pepperoni) -->
+  <circle cx="220" cy="220" r="30" fill="#CC1100" opacity="0.9"/>
+  <circle cx="300" cy="250" r="28" fill="#CC1100" opacity="0.9"/>
+  <circle cx="256" cy="340" r="26" fill="#CC1100" opacity="0.9"/>
+  <circle cx="180" cy="310" r="24" fill="#CC1100" opacity="0.9"/>
+  <circle cx="330" cy="330" r="22" fill="#CC1100" opacity="0.9"/>
+  <!-- Brilho do queijo (highlights) -->
+  <circle cx="240" cy="200" r="8" fill="#FFF8E1" opacity="0.6"/>
+  <circle cx="280" cy="280" r="6" fill="#FFF8E1" opacity="0.5"/>
+  <circle cx="200" cy="300" r="5" fill="#FFF8E1" opacity="0.4"/>
 </svg>
