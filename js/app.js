@@ -619,8 +619,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // [ANTI-DOUBLE-ORDER] Prevenção de pedido duplicado acidental
         const lastOrderTime = parseInt(safeGetItem('lastOrderTimestamp') || '0', 10);
-        const now = new Date();
-        const timeSinceLastOrder = now.getTime() - lastOrderTime;
+        const orderTimeNow = new Date();
+        const timeSinceLastOrder = orderTimeNow.getTime() - lastOrderTime;
         if (timeSinceLastOrder < 60000) { // Menos de 1 minuto desde o último pedido
             const secsLeft = Math.ceil((60000 - timeSinceLastOrder) / 1000);
             window.triggerHaptic([50, 100, 50]);
