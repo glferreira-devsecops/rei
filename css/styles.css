@@ -246,17 +246,15 @@ lite-youtube {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  flex: 1;
+  min-width: 0;
 }
 
 .pizza-title {
   font-size: var(--text-lg);
   font-weight: 800;
   color: var(--celta-bone);
-  /* Impede que nomes longos de pizza quebrem o layout do card */
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  max-width: 100%;
+  line-height: 1.2;
 }
 
 .pizza-desc {
