@@ -874,8 +874,8 @@ lite-youtube {
 /* Landscape Mode Constraint (Quando celular tá deitado jogando) */
 @media (orientation: landscape) and (max-height: 400px) {
   .thumb-zone-fixed {
-    /* Diminui a grossura da barra de compra pra sobrar tela útil */
-    padding: 10px 0;
+    /* Diminui a grossura da barra de compra pra sobrar tela útil mas respeita as laterais e o Notch */
+    padding: 10px calc(1.25rem + env(safe-area-inset-right)) env(safe-area-inset-bottom, 0px) calc(1.25rem + env(safe-area-inset-left));
     height: auto;
   }
   body {
