@@ -42,6 +42,7 @@ html {
   font-size: 16px;
   background-color: var(--celta-void);  
   color: var(--celta-bone);
+  overflow-x: hidden;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   scroll-behavior: smooth;
   /* Bloqueia Pull-to-Refresh Glitches (Scroll Bounce) */
@@ -58,6 +59,7 @@ body {
   padding-bottom: var(--thumb-zone-height); /* Espaço pra Thumb Zone */
   min-height: 100vh;
   min-height: 100dvh; /* Dynamic viewport fallback para iOS Safari bottom-bar clipping */
+  overflow-x: hidden;
   display: flex;
   flex-direction: column;
 }
@@ -330,8 +332,10 @@ lite-youtube {
 .thumb-zone-fixed {
   position: fixed;
   bottom: 0;
-  left: 0;
+  left: 50%;
+  transform: translateX(-50%);
   width: 100%;
+  max-width: 600px;
   height: calc(var(--thumb-zone-height) + env(safe-area-inset-bottom, 0px));
   padding-bottom: env(safe-area-inset-bottom, 0px);
   padding-left: 1.25rem;
@@ -615,6 +619,7 @@ lite-youtube {
   left: 0;
   width: 100%; /* BugFix do Scrollbar width de terceiros (100vw overflows document element) */
   height: 100vh;
+  height: 100dvh; /* Garante que Safari iOS não corte os botões do footer */
   background: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(5px);
   z-index: 8000;
@@ -822,7 +827,7 @@ lite-youtube {
 }
 
 .checkout-footer {
-  padding: 1.5rem;
+  padding: 1.5rem 1.5rem calc(1.5rem + env(safe-area-inset-bottom, 0px)) 1.5rem;
   border-top: 1px solid rgba(255, 255, 255, 0.05);
   background: var(--celta-void);
 }
