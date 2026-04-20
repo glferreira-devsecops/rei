@@ -702,14 +702,22 @@ lite-youtube {
 .checkout-items-list li {
   display: flex;
   justify-content: space-between;
+  align-items: flex-start;
   margin-bottom: 0.5rem;
   border-bottom: 1px dashed rgba(255,255,255,0.05);
   padding-bottom: 0.5rem;
+  gap: 1rem;
+}
+
+.checkout-items-list li span:first-child {
+  flex: 1;
+  min-width: 0;
 }
 
 .checkout-items-list li span:last-child {
   font-weight: 700;
   color: var(--neuro-warning);
+  flex-shrink: 0;
 }
 
 .upsell-box {
@@ -730,6 +738,7 @@ lite-youtube {
 .upsell-checkbox {
   width: 20px;
   height: 20px;
+  flex-shrink: 0;
   accent-color: var(--neuro-warning);
 }
 
@@ -858,7 +867,8 @@ lite-youtube {
 
   .pizza-action {
     width: 100%;
-    justify-content: space-between;
+    justify-content: center;
+    gap: 2rem;
     padding: 0.5rem;
   }
 
