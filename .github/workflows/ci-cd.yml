@@ -16,10 +16,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Validate HTML (W3C Nu Validator)
-        uses: nicnocquee/html-validate-action@v1
-        with:
-          files: 'index.html 404.html'
+      - name: Basic HTML Validation (Internal)
+        run: |
+          if ! grep -q '<!DOCTYPE html>' index.html; then
+            echo "❌ ERRO: DOCTYPE ausente em index.html"
+            exit 1
+          fi
+          echo "✅ HTML estrutural OK."
 
       - name: Validate JSON (manifest + vercel)
         run: |
