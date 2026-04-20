@@ -273,6 +273,7 @@ lite-youtube {
 .pizza-action {
   display: flex;
   align-items: center;
+  align-self: center; /* Impede a pílula de virar uma 'salsicha' vertical se o texto for enorme */
   background: rgba(255, 193, 7, 0.05); /* Outline suave */
   border: 1px solid rgba(255, 193, 7, 0.2);
   border-radius: 999px;
