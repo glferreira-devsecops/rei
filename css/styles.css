@@ -210,18 +210,7 @@ lite-youtube > iframe {
   left: 0 !important;
 }
 
-/* Força a thumbnail (poster) a cobrir o container vertical */
-lite-youtube::before {
-  content: '';
-  display: block;
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-position: center;
-  background-size: cover;
-}
+
 
 .video-hook {
   text-align: center;
