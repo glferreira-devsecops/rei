@@ -535,6 +535,21 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // UX: Fechar Sheet clicando no fundo escuro (Overlay Tap-to-Dismiss)
+    const checkoutOverlay = document.getElementById('checkout-sheet-overlay');
+    if (checkoutOverlay) {
+        checkoutOverlay.addEventListener('click', (e) => {
+            if (e.target === checkoutOverlay) {
+                checkoutOverlay.classList.add('hidden-sheet');
+                document.body.style.overflow = '';
+                if (upsellRefri) upsellRefri.checked = false;
+                if (history.state && history.state.modalOpen) {
+                    history.back();
+                }
+            }
+        });
+    }
+
     // Lógica Upsell
     const upsellRefri = document.getElementById('upsell-refri');
     upsellRefri.addEventListener('change', updateSheetTotal);
