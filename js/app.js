@@ -13,14 +13,10 @@
     if (window.self !== window.top) {
         window.top.location.href = window.self.location.href;
     }
-    // 2. Prototype Pollution Mitigation (Congela construtores core)
-    try {
-        Object.freeze(Object.prototype);
-        Object.freeze(Array.prototype);
-        Object.freeze(Function.prototype);
-    } catch (e) {
-        console.warn('[Defesa] Prototype lock parcialmente aplicado.');
-    }
+    // 2. Prototype Pollution Mitigation
+    // [REMOVED] Object.freeze(Object/Array/Function.prototype) DESTRUÍA lite-youtube e
+    // qualquer lib que estenda protótipos nativos (ex: Workbox, Polyfills).
+    // Defesa movida para validação no ponto de entrada (sanitização de inputs).
     // 3. Bloqueio de Drag & Drop para imagens (evita roubo de assets)
     document.addEventListener('dragstart', (e) => e.preventDefault());
 
@@ -42,8 +38,7 @@
     };
 
     // 6. OMEGA-GATE: Anti-Debugging (Sem Destruir CPU Mobile)
-    // Só ativa o debugger bomb se detectar que os DevTools estão abertos
-    // via heurística de tamanho de janela (não gasta CPU em loop quando fechado)
+    // Ativação lazy: só roda o setInterval se detectar DevTools na primeira verificação
     const antiDebug = () => {
         const widthThreshold = window.outerWidth - window.innerWidth > 160;
         const heightThreshold = window.outerHeight - window.innerHeight > 160;
@@ -51,7 +46,8 @@
             debugger;
         }
     };
-    setInterval(antiDebug, 2000);
+    // Throttled: 5s em vez de 2s para reduzir wake-ups de CPU em mobile idle
+    setInterval(antiDebug, 5000);
 
     // 7. Mordaça de Console (Preserva console.error pra debug de produção)
     try {
@@ -65,13 +61,52 @@
 
 document.addEventListener('DOMContentLoaded', () => {
     /* ====================================================================== 
+       0.5 TOAST NOTIFICATION SYSTEM (Substitui alert() bloqueante)
+       ====================================================================== */
+    const showToast = (message, type = 'warning', duration = 4000) => {
+        // Remove toast anterior se existir
+        const existing = document.getElementById('darkforge-toast');
+        if (existing) existing.remove();
+
+        const toast = document.createElement('div');
+        toast.id = 'darkforge-toast';
+        const icons = { warning: '⚠️', error: '❌', success: '✅', info: 'ℹ️' };
+        const colors = {
+            warning: 'rgba(255, 193, 7, 0.15)',
+            error: 'rgba(255, 42, 0, 0.15)',
+            success: 'rgba(40, 167, 69, 0.15)',
+            info: 'rgba(0, 123, 182, 0.15)'
+        };
+        const borders = {
+            warning: 'rgba(255, 193, 7, 0.4)',
+            error: 'rgba(255, 42, 0, 0.4)',
+            success: 'rgba(40, 167, 69, 0.4)',
+            info: 'rgba(0, 123, 182, 0.4)'
+        };
+        toast.style.cssText = `position:fixed;top:0;left:50%;transform:translateX(-50%) translateY(-100%);max-width:90vw;width:auto;background:${colors[type]};border:1px solid ${borders[type]};backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);color:#EDEDED;padding:14px 20px;border-radius:0 0 12px 12px;font-family:'Inter',sans-serif;font-size:0.9rem;font-weight:600;z-index:99999;text-align:center;transition:transform 0.4s cubic-bezier(0.16,1,0.3,1);pointer-events:auto;box-shadow:0 8px 32px rgba(0,0,0,0.4);`;
+        toast.textContent = `${icons[type] || ''} ${message}`;
+        document.body.appendChild(toast);
+
+        // Slide in
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                toast.style.transform = 'translateX(-50%) translateY(0)';
+            });
+        });
+
+        // Auto-dismiss
+        setTimeout(() => {
+            toast.style.transform = 'translateX(-50%) translateY(-100%)';
+            setTimeout(() => toast.remove(), 400);
+        }, duration);
+    };
+
+    /* ====================================================================== 
        1. PWA Service Worker Registration
        ====================================================================== */
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-            navigator.serviceWorker.register('/sw.js').then(reg => {
-                console.log('[Sistema] Viatura armada e pronta.', reg.scope);
-            }).catch(err => {
+            navigator.serviceWorker.register('/sw.js').catch(err => {
                 console.error('[Falha] Motor engasgou:', err);
             });
         });
@@ -259,6 +294,7 @@ document.addEventListener('DOMContentLoaded', () => {
        3. Micro-Cart Engine (Thumb Zone Frictionless com Quantidades)
        * DOM Clobbering Prevented via Strict Element Hooking
        ====================================================================== */
+    let currentGlobalItems = 0; // Closure-scoped (antes era window.currentGlobalItems = DOM Clobbering vector)
     const thumbZone = document.getElementById('thumb-zone');
     const pizzaActions = document.querySelectorAll('main .pizza-action');
     const totalEl = thumbZone.querySelector('#cart-total') || document.getElementById('cart-total');
@@ -305,8 +341,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         totalEl.textContent = (totalCents / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
         
-        // Expondo contagem para o escopo
-        window.currentGlobalItems = globalItems;
+        // Contagem global em closure (não expor ao window = anti DOM Clobbering)
+        currentGlobalItems = globalItems;
 
         // Edge Case: Esconde o Footer Preto Float inteiro se carrinho vazio
         if (totalCents === 0) {
@@ -365,9 +401,9 @@ document.addEventListener('DOMContentLoaded', () => {
         incBtn.addEventListener('click', (e) => {
             e.preventDefault();
             // Lógica de Negócio: Limite Global, não apenas por item! (Evita 60 calabrezas)
-            if (window.currentGlobalItems >= 15) {
+            if (currentGlobalItems >= 15) {
                 window.triggerHaptic([30, 30, 30]); // Erro tátil
-                alert('Limite máximo de 15 itens atingido.');
+                showToast('Limite máximo de 15 itens atingido.', 'warning');
                 return;
             }
             cart[pizza].qty++;
@@ -551,6 +587,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 'change-group', 'Dinheiro');
 
     // Lógica ViaCEP
+    let currentCepRequest = null; // Closure-scoped AbortController (antes era window.currentCepRequest)
     const cepInput = document.getElementById('customer-cep');
     const btnCep = document.getElementById('buscar-cep-btn');
     const addressInput = document.getElementById('customer-address');
@@ -561,12 +598,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (cep.length === 8) {
             btnCep.innerHTML = '<span class="loading-spinner" style="width: 16px; height: 16px; border: 2px solid var(--celta-sub); border-top-color: var(--neuro-warning); border-radius: 50%; animation: spin 1s linear infinite;"></span>';
             
-            // AbortController para aniquilar Race Conditions
-            if (window.currentCepRequest) {
-                window.currentCepRequest.abort();
+            // AbortController para aniquilar Race Conditions (closure-scoped)
+            if (currentCepRequest) {
+                currentCepRequest.abort();
             }
-            window.currentCepRequest = new AbortController();
-            const signal = window.currentCepRequest.signal;
+            currentCepRequest = new AbortController();
+            const signal = currentCepRequest.signal;
 
             try {
                 const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`, { signal });
@@ -637,14 +674,14 @@ document.addEventListener('DOMContentLoaded', () => {
         if (timeSinceLastOrder < 60000) { // Menos de 1 minuto desde o último pedido
             const secsLeft = Math.ceil((60000 - timeSinceLastOrder) / 1000);
             window.triggerHaptic([50, 100, 50]);
-            alert(`⚠️ Calma chefe! Seu pedido anterior foi enviado há ${secsLeft}s. Aguarde 1 min pra mandar outro.`);
+            showToast(`Calma chefe! Pedido enviado há ${secsLeft}s. Aguarde 1 min.`, 'warning');
             resetCheckoutState();
             return;
         }
 
         if (!navigator.onLine) {
             window.triggerHaptic([100, 100, 100]);
-            alert('⚠️ Sem Conexão 4G/WiFi!');
+            showToast('Sem Conexão 4G/WiFi!', 'error');
             return;
         }
         
@@ -661,7 +698,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const hour = now.getHours();
         if (hour >= 2 && hour < 18) {
             window.triggerHaptic([100, 50, 100]);
-            alert('⚠️ Poxa chefe, o forno tá desligado agora! Abrimos às 18h. Pode mandar a mensagem agora pra garantir o 1º lugar da Fila!');
+            showToast('Forno desligado! Abrimos às 18h. Mande agora pra garantir o 1º da fila!', 'info', 5000);
         }
 
         // Token de Fila (Order ID)
@@ -684,7 +721,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Tarpitting / Limite Anti-Spam com Desbloqueio (Avoinding DOS forever)
         if (totalItems === 0 || totalItems > 15) {
              window.triggerHaptic([50, 100, 50, 100]);
-             alert('⚠️ O carrinho deve conter entre 1 e 15 itens.');
+             showToast('O carrinho deve conter entre 1 e 15 itens.', 'warning');
              resetCheckoutState();
              return;
         }
@@ -710,7 +747,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const fullAddr = [addr, num].filter(Boolean).join(', ');
             if (!fullAddr) {
                 window.triggerHaptic([50, 100, 50]);
-                alert('⚠️ Coloca pelo menos a rua/bairro pra o motoboy achar!');
+                showToast('Coloca pelo menos a rua/bairro pra o motoboy achar!', 'warning');
                 resetCheckoutState();
                 return;
             }

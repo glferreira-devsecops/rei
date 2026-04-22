@@ -192,8 +192,6 @@ header {
   background-color: var(--celta-void);
   /* Proteção LCP/CLS: Espaço reservado para vídeo vertical (9:16 Shorts) */
   aspect-ratio: 9 / 16;
-  /* Position context para os filhos absolutos (lite-youtube) */
-  position: relative;
 }
 
 lite-youtube {
