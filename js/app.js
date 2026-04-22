@@ -93,18 +93,25 @@ document.addEventListener('DOMContentLoaded', () => {
                 canvas.width = 32;
                 canvas.height = 32;
                 const ctx = canvas.getContext('2d');
+                ctx.imageSmoothingEnabled = true;
+                ctx.imageSmoothingQuality = 'high';
                 let frame = 0;
-                const FPS = 20;
+                const FPS = 12; // Reduzido de 20: suficiente para percepção suave, menor carga de CPU
                 const animate = () => {
                     frame++;
                     ctx.clearRect(0, 0, 32, 32);
                     ctx.save();
+                    // Clip circular: previne artefatos de borda quadrada no ícone circular
+                    ctx.beginPath();
+                    ctx.arc(16, 16, 16, 0, Math.PI * 2);
+                    ctx.closePath();
+                    ctx.clip();
                     ctx.translate(16, 16);
                     // Oscilação suave: ±5° com easing senoidal
                     const angle = Math.sin(frame * 0.08) * 0.09;
                     ctx.rotate(angle);
-                    // Pulse scale: 0.95 → 1.05
-                    const scale = 1 + Math.sin(frame * 0.06) * 0.04;
+                    // Pulse scale: 0.97 → 1.03 (sutil para não clipar o círculo)
+                    const scale = 1 + Math.sin(frame * 0.06) * 0.03;
                     ctx.scale(scale, scale);
                     ctx.drawImage(faviconImg, -16, -16, 32, 32);
                     ctx.restore();

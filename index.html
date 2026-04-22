@@ -254,11 +254,8 @@
 
         <!-- Campo Endereço (condicional) -->
         <div class="checkout-form-group" id="address-group">
-          <!-- HONEYPOT TRAP (Anti-Bot) - Usuário real nunca verá isso, bot scraper preencherá -->
-          <div aria-hidden="true" style="position: absolute; left: -9999px;">
-            <label for="trap-field">Não preencha este campo se for humano</label>
-            <input type="text" id="trap-field" name="trap-field" tabindex="-1" autocomplete="off">
-          </div>
+
+
           
           <div style="display: flex; gap: 8px; margin-bottom: 8px; align-items: stretch;">
             <input type="tel" id="customer-cep" placeholder="CEP (Opcional)" class="checkout-input" style="flex: 1;" maxlength="9">
