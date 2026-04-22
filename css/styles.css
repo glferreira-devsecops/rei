@@ -190,14 +190,49 @@ header {
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 15px rgba(255, 42, 0, 0.15);
   border: 1px solid rgba(255, 255, 255, 0.1);
   background-color: var(--celta-void);
-  /* Proteção LCP/CLS: Espaço reservado para vídeo vertical (16:9 ratio inverts to 9:16) */
+  /* Proteção LCP/CLS: Espaço reservado para vídeo vertical (9:16 Shorts) */
   aspect-ratio: 9 / 16;
+  /* Position context para os filhos absolutos (lite-youtube) */
+  position: relative;
 }
 
 lite-youtube {
   width: 100%;
   height: 100%;
   max-width: 100%;
+  /* Override: lite-youtube usa padding-bottom:56.25% (16:9) internamente.
+     Para Shorts (9:16), zeramos e forçamos preenchimento absoluto. */
+  padding-bottom: 0 !important;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+/* Força o iframe do YouTube a cobrir o container inteiro sem barras pretas */
+lite-youtube > iframe {
+  width: 100% !important;
+  height: 100% !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+}
+
+/* Força a thumbnail (poster) a cobrir o container vertical */
+lite-youtube::before {
+  content: '';
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-position: center;
+  background-size: cover;
+}
+
+/* Container pai precisa ser relative para o absolute funcionar */
+.video-container {
+  position: relative;
 }
 
 .video-hook {
