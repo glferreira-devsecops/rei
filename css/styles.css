@@ -230,10 +230,7 @@ lite-youtube::before {
   background-size: cover;
 }
 
-/* Container pai precisa ser relative para o absolute funcionar */
-.video-container {
-  position: relative;
-}
+
 
 .video-hook {
   text-align: center;

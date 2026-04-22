@@ -429,7 +429,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 const li = document.createElement('li');
                 const itemTotalCents = cart[itemName].qty * cart[itemName].price;
                 cartTotal += itemTotalCents;
-                li.innerHTML = `<span>${cart[itemName].qty}x ${itemName}</span> <span>${(itemTotalCents / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>`;
+                // [SECURITY] textContent previne XSS via DOM Clobbering em nomes de item
+                const nameSpan = document.createElement('span');
+                nameSpan.textContent = `${cart[itemName].qty}x ${itemName}`;
+                const priceSpan = document.createElement('span');
+                priceSpan.textContent = (itemTotalCents / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+                li.appendChild(nameSpan);
+                li.appendChild(priceSpan);
                 listEl.appendChild(li);
             }
         }
@@ -803,8 +809,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ESC fecha o modal B2B (acessibilidade desktop)
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && b2bModal && b2bModal.classList.contains('active')) {
-            closeB2b();
+        if (e.key === 'Escape') {
+            // Fecha B2B modal
+            if (b2bModal && b2bModal.classList.contains('active')) {
+                closeB2b();
+                return;
+            }
+            // Fecha Checkout sheet
+            const sheet = document.getElementById('checkout-sheet-overlay');
+            if (sheet && !sheet.classList.contains('hidden-sheet')) {
+                sheet.classList.add('hidden-sheet');
+                document.body.style.overflow = '';
+                if (upsellRefri) upsellRefri.checked = false;
+                if (history.state && history.state.modalOpen) history.back();
+            }
         }
     });
 
