@@ -937,16 +937,4 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Checkout Overlay — Click fora do sheet fecha (UX padrão Bottom Sheet)
-    const checkoutOverlay = document.getElementById('checkout-sheet-overlay');
-    if (checkoutOverlay) {
-        checkoutOverlay.addEventListener('click', (e) => {
-            if (e.target === checkoutOverlay) {
-                checkoutOverlay.classList.add('hidden-sheet');
-                document.body.style.overflow = '';
-                if (upsellRefri) upsellRefri.checked = false;
-                if (history.state && history.state.modalOpen) history.back();
-            }
-        });
-    }
 });
