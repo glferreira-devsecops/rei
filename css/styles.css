@@ -197,7 +197,11 @@ lite-youtube {
   max-width: 100%;
   display: block;
   position: relative;
-  /* 9:16 Aspect Ratio Seguro (16/9 = 1.7777 -> 177.77%) - Anti-Collapse iOS */
+  /* Removemos o padding-bottom daqui pois o lite-youtube usa ::after para a proporção */
+}
+
+/* Substitui a proporção 16:9 padrão do lite-youtube por 9:16 (Shorts) de forma nativa */
+lite-youtube::after {
   padding-bottom: 177.77% !important;
 }
 
