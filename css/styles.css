@@ -190,19 +190,24 @@ header {
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 15px rgba(255, 42, 0, 0.15);
   border: 1px solid rgba(255, 255, 255, 0.1);
   background-color: var(--celta-void);
+  /* Classic Aspect Ratio Hack Wrapper (177.77% = 9:16) */
+  padding-bottom: 177.77%;
+  height: 0;
 }
 
 lite-youtube {
   width: 100%;
+  height: 100% !important; /* Force full height of the wrapper */
   max-width: 100%;
   display: block;
-  position: relative;
-  /* Removemos o padding-bottom daqui pois o lite-youtube usa ::after para a proporção */
+  position: absolute !important;
+  top: 0;
+  left: 0;
 }
 
-/* Substitui a proporção 16:9 padrão do lite-youtube por 9:16 (Shorts) de forma nativa */
+/* Kill lite-youtube's internal aspect ratio hack so it doesn't overflow our wrapper */
 lite-youtube::after {
-  padding-bottom: 177.77% !important;
+  display: none !important;
 }
 
 /* Força o iframe do YouTube a cobrir o container inteiro sem barras pretas */
