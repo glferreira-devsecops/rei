@@ -60,8 +60,8 @@
   <!-- DNS Prefetch: ViaCEP (Antecipa resolução DNS pra quando abrir o checkout) -->
   <link rel="dns-prefetch" href="https://viacep.com.br">
   
-  <!-- Preload da Thumbnail do YouTube (Zera o LCP delay) -->
-  <link rel="preload" href="https://i.ytimg.com/vi/pX-fR89CRHw/maxresdefault.jpg" as="image">
+  <!-- Preload da Thumbnail do YouTube (Zera o LCP delay - fallback para hqdefault que nunca dá 404 em Shorts) -->
+  <link rel="preload" href="https://i.ytimg.com/vi/pX-fR89CRHw/hqdefault.jpg" as="image">
 
   <!-- Favicon SVG (Scalable, infinita resolução em qualquer device) -->
   <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -120,7 +120,7 @@
     <!-- Hack Arquitetural: O Vídeo no Topo empurra o Cardápio para a Thumb Zone (Baixo) -->
     <section class="video-sales-letter">
       <div class="video-container shadow-elite">
-        <lite-youtube videoid="pX-fR89CRHw" params="controls=0&rel=0&modestbranding=1&playsinline=1" playlabel="A Cliente Duvidou - 1 Minuto" style="background-image: url('https://i.ytimg.com/vi/pX-fR89CRHw/maxresdefault.jpg'); background-size: cover; background-position: center;"></lite-youtube>
+        <lite-youtube videoid="pX-fR89CRHw" params="controls=0&rel=0&modestbranding=1&playsinline=1" playlabel="A Cliente Duvidou - 1 Minuto" style="background-image: url('https://i.ytimg.com/vi/pX-fR89CRHw/hqdefault.jpg'); background-size: cover; background-position: center;"></lite-youtube>
       </div>
       <p class="video-hook">"Original nunca se desoriginalizará. Vendo barato porque posso, meu pai é o dono e eu sou sócio."</p>
     </section>
