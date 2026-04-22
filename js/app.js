@@ -31,9 +31,13 @@
             // iOS bloqueia vibrate() a nível de Hardware Web.
             // Fallback: Efeito Visual (Flash) na tela para atuar como tátil perceptivo
             const flash = document.createElement('div');
-            flash.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(255,255,255,0.15);z-index:99999;pointer-events:none;';
+            flash.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(255,255,255,0.15);z-index:99999;pointer-events:none;will-change:opacity;';
             document.body.appendChild(flash);
-            setTimeout(() => flash.remove(), 50);
+            requestAnimationFrame(() => {
+                flash.style.opacity = '0';
+                flash.style.transition = 'opacity 0.15s ease-out';
+                setTimeout(() => flash.remove(), 200);
+            });
         }
     };
 
@@ -246,7 +250,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 btn.target = '_blank';
                 btn.rel = 'noopener noreferrer';
                 btn.style.cssText = `display:flex;align-items:center;justify-content:center;width:100%;padding:16px;margin-bottom:12px;border-radius:12px;background:${bg};color:${fg};text-decoration:none;font-size:1.1rem;font-weight:700;border:${border};transition:transform 0.1s;`;
-                btn.innerHTML = `<span style="margin-right:10px;font-size:1.4rem;">${icon}</span> ${text}`;
+                // [SECURITY] createElement instead of innerHTML — icon is emoji, text is hardcoded
+                const iconSpan = document.createElement('span');
+                iconSpan.style.cssText = 'margin-right:10px;font-size:1.4rem;';
+                iconSpan.textContent = icon;
+                btn.appendChild(iconSpan);
+                btn.appendChild(document.createTextNode(` ${text}`));
                 btn.onclick = () => closeNav();
                 return btn;
             };
@@ -296,9 +305,11 @@ document.addEventListener('DOMContentLoaded', () => {
        ====================================================================== */
     let currentGlobalItems = 0; // Closure-scoped (antes era window.currentGlobalItems = DOM Clobbering vector)
     const thumbZone = document.getElementById('thumb-zone');
+    if (!thumbZone) return; // Guard: Se DOM incompleto, aborta cart engine sem quebrar o site
     const pizzaActions = document.querySelectorAll('main .pizza-action');
     const totalEl = thumbZone.querySelector('#cart-total') || document.getElementById('cart-total');
     const checkoutBtn = thumbZone.querySelector('#checkout-btn') || document.getElementById('checkout-btn');
+    if (!totalEl || !checkoutBtn) return; // Guard: elementos críticos ausentes
     
     /* ====================================================================== 
        2.8 CATÁLOGO IMMUTABLE SERVER-LIKE (Anti-DOM Tampering)
@@ -464,7 +475,8 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Populate Checkout Sheet
         const listEl = document.getElementById('checkout-items-list');
-        listEl.innerHTML = '';
+        // [SECURITY] replaceChildren() é mais seguro que innerHTML='' — não processa HTML parser
+        listEl.replaceChildren();
         let cartTotal = 0;
         
         for (const itemName in cart) {
@@ -804,7 +816,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Salva timestamp pra Anti-Double-Order
             safeSetItem('lastOrderTimestamp', String(Date.now()));
             // window.open preserva a aba do checkout (location.href destruiria o state se o WhatsApp não abrisse)
-            const opened = window.open(waLink, '_blank');
+            const opened = window.open(waLink, '_blank', 'noopener,noreferrer');
             if (!opened) {
                 // Fallback: Se popup bloqueado (iOS WebView), usa redirect direto
                 window.location.href = waLink;
