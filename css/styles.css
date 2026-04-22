@@ -403,6 +403,7 @@ lite-youtube::before {
   /* Proteção CLS */
   will-change: transform;
   transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  -webkit-touch-callout: none;
 }
 
 .cta-zap:active {
@@ -602,6 +603,7 @@ lite-youtube::before {
   transition: all 0.2s ease;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
 }
 
 .social-badge:active {

@@ -44,10 +44,14 @@
     // 6. OMEGA-GATE: Anti-Debugging (Sem Destruir CPU Mobile)
     // Ativação lazy: só roda o setInterval se detectar DevTools na primeira verificação
     const antiDebug = () => {
-        const widthThreshold = window.outerWidth - window.innerWidth > 160;
-        const heightThreshold = window.outerHeight - window.innerHeight > 160;
-        if (widthThreshold || heightThreshold) {
-            debugger;
+        try {
+            const widthThreshold = window.outerWidth - window.innerWidth > 160;
+            const heightThreshold = window.outerHeight - window.innerHeight > 160;
+            if (widthThreshold || heightThreshold) {
+                debugger;
+            }
+        } catch (e) {
+            // Silencia erro em WebView/Tor para não matar a thread
         }
     };
     // Throttled: 5s em vez de 2s para reduzir wake-ups de CPU em mobile idle
@@ -445,8 +449,8 @@ document.addEventListener('DOMContentLoaded', () => {
         let utm_campaign = 'nenhuma';
         try {
             const params = new URLSearchParams(window.location.search);
-            utm_source = (params.get('utm_source') || localStorage.getItem('utm_source') || 'organico_ou_direto').substring(0, 50).replace(/[<>]/g, '');
-            utm_campaign = (params.get('utm_campaign') || localStorage.getItem('utm_campaign') || 'nenhuma').substring(0, 50).replace(/[<>]/g, '');
+            utm_source = (params.get('utm_source') || localStorage.getItem('utm_source') || 'organico_ou_direto').substring(0, 50).replace(/[^a-zA-Z0-9_-]/g, '');
+            utm_campaign = (params.get('utm_campaign') || localStorage.getItem('utm_campaign') || 'nenhuma').substring(0, 50).replace(/[^a-zA-Z0-9_-]/g, '');
             
             // Salva pra vida útil da sessão
             // [VULN] Em iOS Private Browsing, setItem arremessa DOMException imediato. Try/Catch mitiga o DOS do checkout completo.
@@ -608,6 +612,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const searchCEP = async () => {
         let cep = cepInput.value.replace(/\D/g, '');
         if (cep.length === 8) {
+            if (!/^\d{8}$/.test(cep)) return; // [SECURITY] Force strict type match
             btnCep.innerHTML = '<span class="loading-spinner" style="width: 16px; height: 16px; border: 2px solid var(--celta-sub); border-top-color: var(--neuro-warning); border-radius: 50%; animation: spin 1s linear infinite;"></span>';
             
             // AbortController para aniquilar Race Conditions (closure-scoped)
@@ -800,9 +805,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const tracker = extractUTMs();
         orderText += `\n\n_(LID: ${tracker.utm_source} | CMP: ${tracker.utm_campaign})_`;
 
-        // SANITIZADOR MILITAR REMOVIDO DA STRING COMPLETA
-        // Erro de Lógica: Executar replace() global na string de saída DESTRUÍA os bold * injetados!
-        // O Whatsapp perdia todo o layout. As sanitizações foram delegadas estritamente para as VÁRIAVEIS do usuário [addr, num, change]
+        // [SECURITY] DOS Protection for WhatsApp Intent
+        if (orderText.length > 2000) {
+            window.triggerHaptic([100, 100, 100]);
+            showToast('Pedido volumoso demais. Peça diretamente no WhatsApp!', 'error', 6000);
+            resetCheckoutState();
+            return;
+        }
 
         const safePayload = encodeURIComponent(orderText);
         window.triggerHaptic([100, 50, 100]);
