@@ -190,20 +190,15 @@ header {
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 15px rgba(255, 42, 0, 0.15);
   border: 1px solid rgba(255, 255, 255, 0.1);
   background-color: var(--celta-void);
-  /* Proteção LCP/CLS: Espaço reservado para vídeo vertical (9:16 Shorts) */
-  aspect-ratio: 9 / 16;
 }
 
 lite-youtube {
   width: 100%;
-  height: 100%;
   max-width: 100%;
-  /* Override: lite-youtube usa padding-bottom:56.25% (16:9) internamente.
-     Para Shorts (9:16), zeramos e forçamos preenchimento absoluto. */
-  padding-bottom: 0 !important;
-  position: absolute;
-  top: 0;
-  left: 0;
+  display: block;
+  position: relative;
+  /* 9:16 Aspect Ratio Seguro (16/9 = 1.7777 -> 177.77%) - Anti-Collapse iOS */
+  padding-bottom: 177.77% !important;
 }
 
 /* Força o iframe do YouTube a cobrir o container inteiro sem barras pretas */
