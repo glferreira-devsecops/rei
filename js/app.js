@@ -574,6 +574,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 if (val === showCondition) {
                     depDiv.classList.remove('hidden-field');
+                    // [UX FRICTIONLESS] Auto-focus no campo recém-revelado para popup de teclado instantâneo
+                    const firstInput = depDiv.querySelector('input');
+                    if (firstInput) {
+                        setTimeout(() => firstInput.focus(), 50);
+                    }
                 } else {
                     depDiv.classList.add('hidden-field');
                 }
@@ -630,6 +635,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     // [VULN FIX] Race Condition: Só sobrescreve se o usuário não começou a digitar a rua na mão.
                     if (document.activeElement !== addressInput) {
                         addressInput.value = [data.logradouro, data.bairro, data.localidade].filter(Boolean).join(', ');
+                        // [UX FRICTIONLESS] Pula o foco do CEP direto pro Número da casa!
+                        numberInput.focus();
                     }
                     btnCep.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#28a745" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>';
 
